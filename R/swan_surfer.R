@@ -54,11 +54,15 @@
 #' @import grid
 #' @import gtable
 #' @import metR
+#' @import plotly
+#' @import From plotly ggplotly
 #' @importFrom lubridate ymd
 #' @importFrom sp coordinates
 #' @import fields
+#' @import htmlwidgets
+#' @importFrom htmlwidgets saveWidget
 #' @importFrom stats complete.cases
-#'
+#'     
 #' @export
 #'
 
@@ -300,6 +304,7 @@ swan_surfR <- function(path, ovit, ocav){
               plot.margin=grid::unit(c(0,0,0,0), "mm")) +
         guides(fill = guide_legend(nrow = 1, byrow = TRUE,
                                    label.position = "bottom"))
+      salPlot_s1<-salPlot_s%>% ggplotly()
       
       doPlot_s <- ggplot()+
         geom_raster(data = tps_list_all[[2]],
@@ -363,6 +368,9 @@ swan_surfR <- function(path, ovit, ocav){
         guides(fill = guide_legend(nrow = 1, byrow = TRUE,
                                    label.position = "bottom"))
       
+      doPlot_s1<-doPlot_s%>% ggplotly()
+      
+      
       chlorPlot_s <- ggplot()+
         geom_raster(data = tps_list_all[[4]],
                     aes(x=x, y=y, fill = factor(Chlorophyll)),
@@ -423,6 +431,9 @@ swan_surfR <- function(path, ovit, ocav){
         guides(fill = guide_legend(nrow = 1, byrow = TRUE,
                                    label.position = "bottom"))
       
+      chlorPlot_s1<-chlorPlot_s%>% ggplotly()
+      
+      
       tempPlot_s <- ggplot()+
         geom_raster(data = tps_list_all[[3]],
                     aes(x=x, y=y, fill = factor(Temperature))) +
@@ -477,6 +488,14 @@ swan_surfR <- function(path, ovit, ocav){
               plot.margin=grid::unit(c(0,0,0,0), "mm")) +
         guides(fill = guide_legend(nrow = 1, byrow = TRUE,
                                    label.position = "bottom"))
+      
+      tempPlot_s1<-tempPlot_s%>% ggplotly()
+      
+      #
+      fig<-subplot(salPlot_s1, doPlot_s1, chlorPlot_s1, tempPlot_s1, nrows = 4)
+      
+      htmlwidgets::saveWidget(as_widget(fig), "index.html")
+      
       
       # create list of plotGrobs
       plts <- lapply(list(salPlot_s, doPlot_s, chlorPlot_s, tempPlot_s), ggplotGrob)
